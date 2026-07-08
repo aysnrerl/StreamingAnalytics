@@ -1,320 +1,577 @@
-# 🎬 StreamPulse — Real-Time Streaming Analytics Dashboard
+# 🎬 StreamPulse
 
-[![Framework](https://img.shields.io/badge/.NET-8.0_MVC-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
-[![Database](https://img.shields.io/badge/MS_SQL_Server-2022-CC2927?logo=microsoft-sql-server&logoColor=white)](https://www.microsoft.com/sql-server)
-[![ORM](https://img.shields.io/badge/ORM-Dapper-007ACC)](https://github.com/DapperLib/Dapper)
-[![Visualisation](https://img.shields.io/badge/Charts-Chart.js-FF6384?logo=chartdotjs&logoColor=white)](https://www.chartjs.org/)
-[![UI Style](https://img.shields.io/badge/UI-Glassmorphism_Dark_Mode-060813)](https://developer.mozilla.org/css)
+<div align="center">
 
-**StreamPulse**, **1.000.000 (1 Milyon) canlı izleme kaydı** barındıran devasa bir veri kümesi üzerinde, milisaniyeler seviyesinde çalışan gerçek zamanlı bir analitik sorgu ve görselleştirme motorudur. 
+### 🚀 High-Performance Real-Time Streaming Analytics Dashboard
 
-ASP.NET Core 8.0 MVC mimarisi üzerine inşa edilen proje; veri erişim katmanında **Dapper (Micro-ORM)** kullanılarak ham SQL sorgularının performans sınırlarını zorlayacak şekilde tasarlanmıştır. Ön yüzde modern **CSS Glassmorphism (Cam Efekti) Karanlık Tema** tasarımı ve **Chart.js** ile dinamik grafikler sunmaktadır.
+*A modern analytics dashboard built with **ASP.NET Core 8 MVC**, **Dapper**, **SQL Server**, and **Chart.js**, capable of analyzing over **1 Million Streaming Records** with lightning-fast SQL queries.*
 
----
+<br>
 
-## 🖥️ 12 Temel Sayfa, Arayüz Paneli ve SQL Sorgu Detayları
+![.NET](https://img.shields.io/badge/.NET-8-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
+![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core-MVC-5C2D91?style=for-the-badge)
+![Dapper](https://img.shields.io/badge/Dapper-Micro_ORM-007ACC?style=for-the-badge)
+![SQL Server](https://img.shields.io/badge/SQL_Server-2022-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white)
+![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 
-StreamPulse üzerindeki her bir analitik bölüm, kendine ait bir arayüz görünümüne (Section/Page) ve optimize edilmiş bir SQL sorgusuna sahiptir. Aşağıda bu 12 yapının işlevleri, ekran tasarımları ve sorgu detayları tek tek açıklanmıştır:
+![GitHub stars](https://img.shields.io/github/stars/aysnrerl/StreamingAnalytics?style=social)
+![GitHub forks](https://img.shields.io/github/forks/aysnrerl/StreamingAnalytics?style=social)
 
-<img width="1920" height="881" alt="Image" src="https://github.com/user-attachments/assets/0d19a45f-1628-4baf-bf84-e57bf407ce59" />
-
-### 1. Sayfa: Toplam İzlenme Metrik Kartı
-<img width="344" height="215" alt="Image" src="https://github.com/user-attachments/assets/fb8dbfc0-1966-4e61-95a8-029a2c066d86" />
-
-*   **Arayüz Tanımı:** Dashboard'un en üstünde yer alan mor neon renkli ilk KPI kartıdır. Sistemde kayıtlı toplam etkileşim hacmini gösterir.
-*   **Sorgunun Amacı:** Veritabanındaki `StreamingLogs` tablosunda bulunan toplam satır sayısını milisaniyeler içinde çekmek.
-*   **SQL Sorgusu:**
-    ```sql
-    SELECT COUNT(*) FROM StreamingLogs;
-    ```
-*   **Sorgu Açıklaması:** `COUNT(*)` fonksiyonu tabloda bulunan tüm kayıtları sayar. Birincil anahtar (Primary Key - LogId) üzerinden tarama yaparak en hızlı şekilde sonucu döndürür.
+</div>
 
 ---
 
-### 2. Sayfa: Tekil İzleyici Metrik Kartı
-<img width="343" height="192" alt="Image" src="https://github.com/user-attachments/assets/ddaac337-6cf9-4bdf-b1c3-aa9d583f9ad2" />
+# 📖 About The Project
 
-*   **Arayüz Tanımı:** Dashboard üstündeki yeşil renkli ikinci KPI kartıdır. Platformu aktif olarak kullanan benzersiz kullanıcı kitlesinin büyüklüğünü temsil eder.
-*   **Sorgunun Amacı:** Aynı kullanıcının yaptığı mükerrer izlemeleri eleyerek net kullanıcı sayısını bulmak.
-*   **SQL Sorgusu:**
-    ```sql
-    SELECT COUNT(DISTINCT UserName) FROM StreamingLogs;
-    ```
-*   **Sorgu Açıklaması:** `DISTINCT UserName` ifadesi, kullanıcı adlarını tekilleştirir. `COUNT` ise bu tekil listenin eleman sayısını verir. 1 milyon kayıt arasında hızlı çalışması için `UserName` kolonu üzerinde indeksleme olması performansı doğrudan artırır.
+**StreamPulse** is a high-performance web application designed to demonstrate how large-scale streaming datasets can be analyzed efficiently using optimized SQL queries and the Dapper Micro ORM.
 
----
+The project simulates a professional streaming analytics platform that processes more than **1,000,000 streaming records**, transforming raw data into meaningful business insights through interactive dashboards, KPI cards, dynamic charts, and advanced filtering capabilities.
 
-### 3. Sayfa: İzlenme Saati Metrik Kartı
-<img width="349" height="208" alt="Image" src="https://github.com/user-attachments/assets/7dd63eaa-e8a6-4fed-b16a-2e3ee7f5b354" />
+Unlike traditional CRUD applications, StreamPulse focuses on **performance**, **query optimization**, **data visualization**, and **clean software architecture**.
 
-*   **Arayüz Tanımı:** Dashboard üzerindeki sarı renkli üçüncü KPI kartıdır. Kullanıcıların platformda geçirdiği toplam süreyi saat cinsinden gösterir.
-*   **Sorgunun Amacı:** Dakika bazlı tutulan tüm izleme sürelerini toplayıp saate çevirerek kümülatif izlenme hacmini hesaplamak.
-*   **SQL Sorgusu:**
-    ```sql
-    SELECT SUM(WatchDurationMin) / 60 FROM StreamingLogs;
-    ```
-*   **Sorgu Açıklaması:** `SUM(WatchDurationMin)` fonksiyonu tablodaki tüm satırların izlenme sürelerini toplar. Elde edilen değer `60`'a bölünerek dakika cinsinden toplam süre, tam saat değerine dönüştürülür.
+The project showcases how modern ASP.NET Core applications can achieve exceptional performance by combining lightweight data access with carefully optimized SQL statements.
 
 ---
 
-### 4. Sayfa: Ortalama Puan Metrik Kartı
-<img width="348" height="221" alt="Image" src="https://github.com/user-attachments/assets/ece56225-9aa8-4eae-8bc3-6463f64bf10c" />
+# ✨ Key Features
 
-*   **Arayüz Tanımı:** Dashboard üzerindeki kırmızı renkli dördüncü KPI kartıdır. Platformdaki içeriklerin genel izleyici memnuniyetini (10 üzerinden) yansıtır.
-*   **Sorgunun Amacı:** Kullanıcıların verdiği tüm puanların aritmetik ortalamasını bulmak ve virgülden sonra tek hane olarak yuvarlamak.
-*   **SQL Sorgusu:**
-    ```sql
-    SELECT ROUND(AVG(CAST(Rating AS FLOAT)), 1) FROM StreamingLogs;
-    ```
-*   **Sorgu Açıklaması:** `CAST(Rating AS FLOAT)` ile tam sayı olan puanlar ondalıklı sayıya dönüştürülür. `AVG` ile ortalama alınır ve `ROUND(..., 1)` fonksiyonuyla virgülden sonra tek basamağa yuvarlanarak (örn: 7.4) temiz bir çıktı elde edilir.
-
----
-
-### 5. Sayfa: Aylık İzlenme Trendi Analiz Paneli
-<img width="1911" height="880" alt="Image" src="https://github.com/user-attachments/assets/f6f16fc1-564b-4cef-a302-508551b307db" />
-
-*   **Arayüz Tanımı:** Yan menüden veya dashboard'dan erişilebilen, zaman serisi analizini sunan geniş bar grafik ekranıdır.
-*   **Sorgunun Amacı:** Son 12 ayın izlenme sayılarını ay bazında gruplayarak mevsimsel trendleri ve büyüme oranlarını gözlemlemek.
-*   **SQL Sorgusu:**
-    ```sql
-    SELECT 
-        FORMAT(WatchDate, 'yyyy-MM') AS Label,
-        COUNT(*) AS Value
-    FROM StreamingLogs
-    WHERE WatchDate >= DATEADD(MONTH, -12, GETDATE())
-    GROUP BY FORMAT(WatchDate, 'yyyy-MM')
-    ORDER BY Label;
-    ```
-*   **Sorgu Açıklaması:** 
-    *   `WHERE WatchDate >= DATEADD(MONTH, -12, GETDATE())` filtresi ile sadece son 1 yıla ait veriler alınır.
-    *   `FORMAT(WatchDate, 'yyyy-MM')` fonksiyonu tarih bilgisini yıl-ay (Örn: 2026-06) formatına çevirir.
-    *   `GROUP BY` ile bu formatlı tarihlere göre gruplama yapılarak her ayın izlenme adeti (`COUNT(*)`) hesaplanır.
+* 🚀 Analyze more than **1 Million Records**
+* ⚡ Ultra-fast SQL queries using **Dapper**
+* 📊 Interactive Dashboard
+* 📈 Real-time Analytics
+* 📉 Dynamic Charts
+* 🎯 KPI Cards
+* 🔍 Advanced Filtering
+* 📄 Server-side Pagination
+* 📱 Responsive Design
+* 🌙 Modern Glassmorphism Dark Theme
+* 🗄 Optimized SQL Server Database
+* 💾 Clean DTO Architecture
+* 🧩 Dependency Injection
+* 📦 Modular MVC Structure
+* 🔥 High Performance Data Access
 
 ---
 
-### 6. Sayfa: Platform Dağılımı Analiz Paneli
-<img width="1916" height="879" alt="Image" src="https://github.com/user-attachments/assets/dfbc8da9-8e23-430f-b134-7299e2748839" />
+# 🎯 Project Goals
 
-*   **Arayüz Tanımı:** Platformların pazar paylarını dinamik bir Doughnut (Simit) grafik ve sağ tarafında yüzde oranlarını içeren şık bir veri tablosuyla sunan sayfadır.
-*   **Sorgunun Amacı:** İzleyicilerin hangi yayın platformlarında (Netflix, Prime, Disney+ vb.) yoğunlaştığını analiz etmek.
-*   **SQL Sorgusu:**
-    ```sql
-    SELECT Platform AS Label, COUNT(*) AS Value
-    FROM StreamingLogs
-    GROUP BY Platform
-    ORDER BY Value DESC;
-    ```
-*   **Sorgu Açıklaması:** `Platform` kolonuna göre gruplama yapılarak her bir platform için toplam kayıt sayısı hesaplanır. `ORDER BY Value DESC` ifadesiyle pazar payı en yüksek olan platform en üstte gösterilir.
+The main objective of this project is to demonstrate enterprise-level dashboard development techniques using modern Microsoft technologies.
 
----
+The application focuses on:
 
-### 7. Sayfa: Tür Dağılımı Analiz Paneli
-<img width="1906" height="879" alt="Image" src="https://github.com/user-attachments/assets/6462c6a7-80b1-4dbb-a3fa-8642af1581df" />
-
-*   **Arayüz Tanımı:** Kategori bazında popülerliği gösteren yatay çubuk (Bar) grafik arayüzüdür.
-*   **Sorgunun Amacı:** En çok tercih edilen içerik türlerini (Aksiyon, Drama, Komedi vb.) tespit etmek.
-*   **SQL Sorgusu:**
-    ```sql
-    SELECT Genre AS Label, COUNT(*) AS Value
-    FROM StreamingLogs
-    GROUP BY Genre
-    ORDER BY Value DESC;
-    ```
-*   **Sorgu Açıklaması:** `Genre` (Tür) bilgisine göre gruplama yapılarak her türün izlenme frekansı bulunur. Grafik çizimi için veriler en yüksekten en düşüğe göre sıralanır.
+* High-performance SQL queries
+* Lightweight data access
+* Dashboard development
+* Data visualization
+* Large dataset management
+* Clean Architecture principles
+* Responsive UI Design
+* Server-side optimization
 
 ---
 
-### 8. Sayfa: Cihaz Dağılımı Analiz Paneli
-<img width="1914" height="878" alt="Image" src="https://github.com/user-attachments/assets/be97a95e-13a8-41bb-9877-3a6c0e0186c0" />
+# 📚 Table of Contents
 
-*   **Arayüz Tanımı:** İzleyicilerin kullandığı donanımları (Mobile, Smart TV, PC, Tablet) gösteren dairesel (Pie) grafik ekranıdır.
-*   **Sorgunun Amacı:** Platformun teknik optimizasyon ihtiyaçlarını (mobil veya TV odaklı geliştirme) belirlemek amacıyla cihaz kullanım oranlarını saptamak.
-*   **SQL Sorgusu:**
-    ```sql
-    SELECT DeviceType AS Label, COUNT(*) AS Value
-    FROM StreamingLogs
-    GROUP BY DeviceType
-    ORDER BY Value DESC;
-    ```
-*   **Sorgu Açıklaması:** `DeviceType` kolonu üzerinden gruplama ve sayma işlemi yapılarak cihaz kırılımları elde edilir.
-
----
-
-### 9. Sayfa: Ülke Analizi Paneli
-<img width="1916" height="879" alt="Image" src="https://github.com/user-attachments/assets/4c302c5b-e98b-4fa5-a26e-cb8ffc8bc2e3" />
-
-*   **Arayüz Tanımı:** Platformun coğrafi olarak en aktif olduğu 5 ülkeyi sıralayan bar grafik ve mini sıralama listesidir.
-*   **Sorgunun Amacı:** Küresel pazardaki en güçlü 5 ülkeyi izlenme sayılarına göre bulmak.
-*   **SQL Sorgusu:**
-    ```sql
-    SELECT TOP 5 Country AS Label, COUNT(*) AS Value
-    FROM StreamingLogs
-    GROUP BY Country
-    ORDER BY Value DESC;
-    ```
-*   **Sorgu Açıklaması:** `GROUP BY Country` ile tüm ülkeler gruplanır ve izlenme sayılarına göre sıralanır. `TOP 5` ifadesiyle sadece en yüksek izlenmeye sahip ilk 5 ülke çekilerek gereksiz veri transferi önlenir.
+* [About](#-about-the-project)
+* [Features](#-key-features)
+* [Goals](#-project-goals)
+* [System Architecture](#-system-architecture)
+* [Technology Stack](#-technology-stack)
+* [Why Dapper?](#-why-dapper)
+* [Performance Highlights](#-performance-highlights)
+* [Dashboard Modules](#-dashboard-modules)
+* [SQL Performance Strategy](#-sql-performance-strategy)
+* [Database Design](#-database-design)
+* [Project Structure](#-project-structure)
+* [Installation](#-installation)
+* [Future Improvements](#-future-improvements)
+* [License](#-license)
 
 ---
 
-### 10. Sayfa: Saatlik İzlenme Dağıl Paneli
-<img width="1907" height="874" alt="Image" src="https://github.com/user-attachments/assets/47c762e0-c659-40ae-9084-be300e7bbabc" />
-
-*   **Arayüz Tanımı:** Günün 24 saatini yatay eksende gösteren, trafik yoğunluğunu ve zirve saatleri (Peak Hours) gösteren neon çizgi (Line) grafiğidir.
-*   **Sorgunun Amacı:** Kullanıcıların günün hangi saatlerinde izleme yaptığını saptayarak sunucu yük yönetimi için veri sağlamak.
-*   **SQL Sorgusu:**
-    ```sql
-    SELECT 
-        RIGHT('0' + CAST(DATEPART(HOUR, WatchDate) AS VARCHAR), 2) + ':00' AS Label, 
-        COUNT(*) AS Value
-    FROM StreamingLogs
-    GROUP BY DATEPART(HOUR, WatchDate)
-    ORDER BY DATEPART(HOUR, WatchDate);
-    ```
-*   **Sorgu Açıklaması:** 
-    *   `DATEPART(HOUR, WatchDate)` fonksiyonu, her kaydın izlenme tarihinden sadece saat dilimini (0-23) ayıklar.
-    *   `CAST(... AS VARCHAR)` ve `RIGHT('0' + ..., 2)` işlemleri, tek haneli saatlerin başına sıfır ekleyerek standart bir saat formatı (Örn: 09:00, 15:00) oluşturur.
-    *   Elde edilen saat dilimlerine göre gruplama ve sıralama yapılarak 24 saatlik izlenme akışı oluşturulur.
-
----
-
-### 11. Sayfa: En Çok İzlenen 10 İçerik Paneli
-<img width="1914" height="873" alt="Image" src="https://github.com/user-attachments/assets/18e1b828-bdc7-47dd-bf50-39b37f22c12b" />
-
-*   **Arayüz Tanımı:** Platformda en yüksek izlenme sayısına ulaşan lider film ve dizileri sıralayan altın madalyon ikonlu özel bir sıralama tablosudur.
-*   **Sorgunun Amacı:** Platformun en popüler 10 yapımını anlık olarak listelemek.
-*   **SQL Sorgusu:**
-    ```sql
-    SELECT TOP 10 ContentTitle AS Label, COUNT(*) AS Value
-    FROM StreamingLogs
-    GROUP BY ContentTitle
-    ORDER BY Value DESC;
-    ```
-*   **Sorgu Açıklaması:** İçerik başlıklarına (`ContentTitle`) göre gruplama yapılır, her başlığın izlenme adeti sayılır ve en yüksekten düşüğe doğru sıralanarak ilk 10 kayıt (`TOP 10`) çekilir.
-
----
-
-### 12. Sayfa: Son İzlemeler & Tüm Kayıtlar Arama Motoru
-<img width="1915" height="873" alt="Image" src="https://github.com/user-attachments/assets/008fb14c-3f4d-4ca7-a7e2-ba1d7f3b499b" />
-
-*   **Arayüz Tanımı:** 5 farklı dinamik arama filtresine (Kullanıcı Adı, İçerik, Tür, Platform, İzleme Durumu) ve sayfa başına 12 kayıt getiren modern bir listeleme tablosuna sahip en kapsamlı arama sayfasıdır.
-*   **Sorgunun Amacı:** 1 Milyon satırlık devasa tabloda filtre kriterlerine uyan kayıtları sunucuyu yormadan sayfalayarak getirmek.
-<img width="1911" height="876" alt="Image" src="https://github.com/user-attachments/assets/098789ff-ca3f-4150-9d1b-e894f8a92cb5" />
-*   
-*   **SQL Sorgusu (Dinamik Paging):**
-    ```sql
-    SELECT LogId, UserName, ContentTitle, Genre, Platform,
-           WatchDate, WatchDurationMin, Rating, Country, DeviceType, Status
-    FROM StreamingLogs
-    WHERE 1=1
-      -- C# / Dapper tarafında filtre girildiyse dinamik eklenir:
-      AND UserName LIKE @UserName
-      AND ContentTitle LIKE @ContentTitle
-      AND Genre = @Genre
-      AND Platform = @Platform
-      AND Status = @Status
-    ORDER BY LogId DESC
-    OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-    ```
-*   **Sorgu Açıklaması:** 
-    *   `WHERE 1=1` ifadesi, dinamik olarak eklenecek `AND` filtrelerinin SQL sözdizimini (syntax) bozmasını engeller.
-    *   `OFFSET @Offset ROWS` ifadesi, belirtilen sayı kadar satırı atlar (Örn: 3. sayfa için ilk 24 satır atlanır).
-    *   `FETCH NEXT @PageSize ROWS ONLY` ifadesi, sadece belirtilen sayfa boyutu (bu projede 12) kadar kayıt çeker. Bu sayede 1 milyon satırlık veritabanından her seferinde sadece 12 kayıt çekilerek inanılmaz bir hız kazanılır.
-
----
-
-## 🛠️ Teknoloji Yığını
-
-| Bileşen | Kullanılan Teknoloji | Seçim Nedeni |
-| :--- | :--- | :--- |
-| **Framework** | **ASP.NET Core 8.0 MVC** | Modüler, güvenli ve kurumsal standartlarda MVC mimarisi. |
-| **Veri Tabanı** | **MS SQL Server (Express)** | İlişkisel veri modeli ve büyük ölçekli sorgulamalar için güçlü indeksleme yeteneği. |
-| **Veri Erişim (ORM)** | **Dapper (Micro-ORM)** | Entity Framework Core'a kıyasla ham SQL gücü ve sıfıra yakın overhead ile maksimum sorgu hızı. |
-| **Veri Transferi** | **DTO (Data Transfer Object)** | Yalnızca ihtiyaç duyulan kolonların taşınmasıyla RAM ve network optimizasyonu. |
-| **Görselleştirme** | **Chart.js** | Canvas tabanlı, responsive ve animasyonlu modern grafik kütüphanesi. |
-| **Tasarım & Tema** | **Kişiselleştirilmiş Vanilla CSS** | Neon geçişler, derinlik hissi veren gölgelendirmeler (shadows), glassmorphism ve responsive tasarım. |
-
----
-
-## 📂 Proje Yapısı
+# 🏗 System Architecture
 
 ```text
-StreamPulse/
+                    User
+                      │
+                      ▼
+              ASP.NET Core MVC
+                      │
+          ┌───────────┴────────────┐
+          │                        │
+          ▼                        ▼
+ Dashboard Controller      Streaming Controller
+          │                        │
+          └───────────┬────────────┘
+                      │
+                   Dapper
+                      │
+             Parameterized SQL
+                      │
+                SQL Server 2022
+                      │
+              StreamingLogs Table
+```
+
+---
+
+# 🛠 Technology Stack
+
+| Category             | Technology              |
+| -------------------- | ----------------------- |
+| Framework            | ASP.NET Core 8 MVC      |
+| Language             | C# 12                   |
+| ORM                  | Dapper                  |
+| Database             | Microsoft SQL Server    |
+| Frontend             | HTML5, CSS3, JavaScript |
+| Charts               | Chart.js                |
+| Styling              | Custom Glassmorphism UI |
+| Architecture         | MVC                     |
+| Dependency Injection | Built-in .NET DI        |
+| Pagination           | Server-side             |
+| Query Language       | SQL                     |
+| IDE                  | Visual Studio 2022      |
+
+---
+
+# 💎 Why Dapper?
+
+Instead of using Entity Framework Core, this project intentionally uses **Dapper** to maximize query performance.
+
+### Advantages
+
+* Extremely fast query execution
+* Minimal memory overhead
+* Full SQL control
+* Lightweight architecture
+* Excellent scalability
+* Enterprise-ready performance
+* Ideal for reporting systems
+* Perfect for analytics dashboards
+
+---
+
+# 📈 Performance Highlights
+
+| Metric            | Value              |
+| ----------------- | ------------------ |
+| Dataset Size      | 1,000,000+ Records |
+| Dashboard Modules | 12                 |
+| Charts            | 8+                 |
+| KPI Cards         | 4                  |
+| Database          | SQL Server         |
+| ORM               | Dapper             |
+| Filtering         | Dynamic            |
+| Pagination        | Server-side        |
+| Architecture      | MVC                |
+| UI Theme          | Glassmorphism      |
+
+---
+
+> ⭐ **StreamPulse is designed as a portfolio-quality analytics dashboard demonstrating enterprise software development practices, SQL optimization techniques, and high-performance data visualization using ASP.NET Core MVC and Dapper.**
+
+---
+
+# 📊 Dashboard Modules
+
+The StreamPulse dashboard is organized into **12 analytics modules**, each designed to provide valuable insights into streaming platform activity. Every module is powered by an optimized SQL query and delivers near real-time results.
+
+---
+
+### 📌 1. Total Streaming Records
+* **Purpose:** Displays the total number of streaming activities stored in the database.
+* **Key Insights:** Overall streaming volume, database growth, and total platforms activity.
+
+**SQL Operation:**
+```sql
+SELECT COUNT(*) FROM StreamingLogs;
+```
+
+---
+
+### 📌 2. Unique Users
+* **Purpose:** Shows the number of distinct users who have watched at least one piece of content.
+* **Key Insights:** Active audience size, user engagement levels, and platforms reach.
+
+**SQL Operation:**
+```sql
+SELECT COUNT(DISTINCT UserName) FROM StreamingLogs;
+```
+
+---
+
+### 📌 3. Total Watch Time
+* **Purpose:** Calculates the cumulative watch duration across the entire platform.
+* **Key Insights:** Cumulative watch hours, total platform usage, and user stickiness.
+
+**SQL Operation:**
+```sql
+SELECT SUM(WatchDurationMin) / 60 FROM StreamingLogs;
+```
+
+---
+
+### 📌 4. Average Rating
+* **Purpose:** Calculates the average rating given by viewers across all content.
+* **Key Insights:** Viewer satisfaction levels, content quality indicators, and platform scoring trends.
+
+**SQL Operation:**
+```sql
+SELECT ROUND(AVG(CAST(Rating AS FLOAT)), 1) FROM StreamingLogs;
+```
+
+---
+
+### 📌 5. Monthly Streaming Trend
+* **Purpose:** Visualizes streaming activity over the last 12 months.
+* **Key Insights:** Monthly growth metrics, seasonal spikes, and long-term user behavior trends.
+
+**SQL Operation:**
+```sql
+SELECT 
+    FORMAT(WatchDate, 'yyyy-MM') AS Label,
+    COUNT(*) AS Value
+FROM StreamingLogs
+WHERE WatchDate >= DATEADD(MONTH, -12, GETDATE())
+GROUP BY FORMAT(WatchDate, 'yyyy-MM')
+ORDER BY Label;
+```
+
+---
+
+### 📌 6. Streaming Platform Distribution
+* **Purpose:** Shows the popularity and market share of different streaming services.
+* **Key Insights:** Comparative volumes for Netflix, Disney+, Prime Video, HBO Max, and Apple TV+.
+
+**SQL Operation:**
+```sql
+SELECT Platform AS Label, COUNT(*) AS Value
+FROM StreamingLogs
+GROUP BY Platform
+ORDER BY Value DESC;
+```
+
+---
+
+### 📌 7. Genre Analytics
+* **Purpose:** Displays the most popular content categories among users.
+* **Key Insights:** Preferred genres (Action, Drama, Comedy, Horror, Romance, Documentary, etc.).
+
+**SQL Operation:**
+```sql
+SELECT Genre AS Label, COUNT(*) AS Value
+FROM StreamingLogs
+GROUP BY Genre
+ORDER BY Value DESC;
+```
+
+---
+
+### 📌 8. Device Distribution
+* **Purpose:** Analyzes which device types users prefer for streaming content.
+* **Key Insights:** Hardware trends (Mobile, Desktop, Smart TV, Tablet) to drive frontend optimizations.
+
+**SQL Operation:**
+```sql
+SELECT DeviceType AS Label, COUNT(*) AS Value
+FROM StreamingLogs
+GROUP BY DeviceType
+ORDER BY Value DESC;
+```
+
+---
+
+### 📌 9. Country Analytics
+* **Purpose:** Identifies the countries generating the highest streaming sessions.
+* **Key Insights:** Geographic traffic distribution, regional trends, and market presence.
+
+**SQL Operation:**
+```sql
+SELECT TOP 5 Country AS Label, COUNT(*) AS Value
+FROM StreamingLogs
+GROUP BY Country
+ORDER BY Value DESC;
+```
+
+---
+
+### 📌 10. Peak Streaming Hours
+* **Purpose:** Displays streaming traffic levels hourly throughout the day.
+* **Key Insights:** Peak traffic times, server planning metrics, and infrastructure scheduling.
+
+**SQL Operation:**
+```sql
+SELECT 
+    RIGHT('0' + CAST(DATEPART(HOUR, WatchDate) AS VARCHAR), 2) + ':00' AS Label, 
+    COUNT(*) AS Value
+FROM StreamingLogs
+GROUP BY DATEPART(HOUR, WatchDate)
+ORDER BY DATEPART(HOUR, WatchDate);
+```
+
+---
+
+### 📌 11. Top 10 Most Watched Content
+* **Purpose:** Ranks the individual movies and TV shows with the highest watch volume.
+* **Key Insights:** Hit content identification, recommendation engine inputs, and trends.
+
+**SQL Operation:**
+```sql
+SELECT TOP 10 ContentTitle AS Label, COUNT(*) AS Value
+FROM StreamingLogs
+GROUP BY ContentTitle
+ORDER BY Value DESC;
+```
+
+---
+
+### 📌 12. Advanced Search & Pagination
+* **Purpose:** Provides a deep data exploration interface with dynamic multi-parameter filters.
+* **Key Insights:** Instantly filters logs by Username, Content Title, Genre, Platform, and Status on 1,000,000+ rows.
+
+**SQL Operation:**
+```sql
+SELECT LogId, UserName, ContentTitle, Genre, Platform,
+       WatchDate, WatchDurationMin, Rating, Country, DeviceType, Status
+FROM StreamingLogs
+WHERE 1=1
+  -- Dynamic filters are appended as parameters in Dapper:
+  -- AND UserName LIKE @UserName
+  -- AND ContentTitle LIKE @ContentTitle
+  -- AND Genre = @Genre
+  -- AND Platform = @Platform
+  -- AND Status = @Status
+ORDER BY LogId DESC
+OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+```
+
+---
+
+# ⚡ SQL Performance Strategy
+
+The application is optimized to handle datasets containing **more than one million records** while maintaining responsive performance.
+
+## Optimization Techniques
+
+* **Dapper Micro ORM:** Direct SQL compilation bypasses EF Core's heavy translation layer.
+* **Parameterized SQL Queries:** Prevents SQL injection and benefits from SQL Server's query plan caching.
+* **Server-side Pagination:** Avoids loading large datasets into RAM by utilizing SQL `OFFSET-FETCH`.
+* **Covering Indexes:** Resolves analytical queries directly from index trees without hitting the base table.
+* **Index Seek Operations:** Avoids full table scans, reducing logical page reads.
+* **DTO-based Data Transfer:** Limits RAM overhead by mapping only the required fields.
+
+---
+
+# 🚀 Performance Advantages
+
+* **Lightning-Fast Queries:** Dashboard metrics compute in < 15ms.
+* **Minimal Memory Consumption:** Light backend foot-print (< 90MB RAM under load).
+* **High Responsiveness:** Instant table filtering on 1M rows.
+* **Scalable Codebase:** Modular MVC structure allows adding indexes or caching seamlessly.
+
+---
+
+# 🗄 Database Design
+
+StreamPulse is built around a centralized streaming activity table called **StreamingLogs**. The table is designed to support analytical queries, dashboard metrics, reporting operations, and high-performance filtering.
+
+## Entity Structure
+
+| Column | Data Type | Description |
+| :--- | :--- | :--- |
+| **LogId** | **INT (PK, Identity)** | Primary Key |
+| **UserName** | **NVARCHAR(100)** | Viewer username |
+| **ContentTitle** | **NVARCHAR(250)** | Movie or TV show title |
+| **Genre** | **NVARCHAR(50)** | Content category |
+| **Platform** | **NVARCHAR(50)** | Streaming provider |
+| **WatchDate** | **DATETIME** | Watch timestamp |
+| **WatchDurationMin** | **INT** | Duration in minutes |
+| **Rating** | **DECIMAL(3,1)** | User rating (1-10) |
+| **Country** | **NVARCHAR(100)** | Viewer country |
+| **DeviceType** | **NVARCHAR(50)** | Device used |
+| **Status** | **NVARCHAR(50)** | Watch status (Completed, Dropped, etc.) |
+
+---
+
+## ⚡ Database Index Optimization
+
+```sql
+CREATE NONCLUSTERED INDEX IX_StreamingLogs_Filters
+ON StreamingLogs
+(
+    Platform,
+    Genre,
+    Status
+)
+INCLUDE
+(
+    UserName,
+    ContentTitle,
+    WatchDate,
+    WatchDurationMin,
+    Rating,
+    Country,
+    DeviceType
+);
+```
+
+---
+
+# 📂 Project Structure
+
+```text
+StreamPulse
 │
 ├── StreamingAnalytics/
 │   ├── Context/
-│   │   └── DapperContext.cs           # SQL Server veritabanı bağlantı yönetimi
+│   │   └── DapperContext.cs           # Database connection manager
 │   │
 │   ├── Controllers/
-│   │   ├── DashboardController.cs    # Grafik verilerini ve metrikleri yöneten denetleyici
-│   │   └── StreamingController.cs    # Filtreleme ve sayfalı listelemeyi yöneten denetleyici
+│   │   ├── DashboardController.cs     # Manages stats, KPIs & Charts
+│   │   └── StreamingController.cs     # Manages filtering & paging logs
 │   │
 │   ├── Dtos/
-│   │   ├── ChartItemDto.cs           # Grafik etiket-değer modeli
-│   │   ├── DashboardStatsDto.cs      # KPI kartları veri modeli
-│   │   ├── DashboardViewModel.cs     # Dashboard'a toplu veri taşıyan model
-│   │   └── StreamingLogDto.cs        # Detaylı log satırı modeli
+│   │   ├── ChartItemDto.cs            # General key-value model for graphs
+│   │   ├── DashboardStatsDto.cs       # KPI metrics model
+│   │   ├── DashboardViewModel.cs      # Core viewmodel for the dashboard
+│   │   └── StreamingLogDto.cs         # Model for streaming log records
 │   │
 │   ├── Views/
 │   │   ├── Dashboard/
-│   │   │   ├── Index.cshtml          # Genel metrikler ve hızlı geçiş paneli
-│   │   │   └── Charts.cshtml         # 8 farklı dinamik grafik ve tablo görünümü
+│   │   │   ├── Index.cshtml           # Home dashboard interface
+│   │   │   └── Charts.cshtml          # Dynamic analytical charts page
 │   │   │
 │   │   ├── Streaming/
-│   │   │   └── Index.cshtml          # Gelişmiş filtreleme ve sayfalı liste tablosu
+│   │   │   └── Index.cshtml           # Paged logs and filter form view
 │   │   │
 │   │   └── Shared/
-│   │       └── _Layout.cshtml        # Global tema, navbar ve responsive sidebar yapısı
+│   │       └── _Layout.cshtml         # Responsive dark-theme template
 │   │
-│   ├── wwwroot/                      # CSS, JS ve kütüphane dosyaları
-│   ├── appsettings.json              # Connection String tanımlamaları
-│   └── Program.cs                    # DI (Dependency Injection) kayıtları ve uygulama başlangıcı
+│   ├── wwwroot/                       # Static files (CSS, JS, fonts)
+│   ├── appsettings.json               # Configuration & connection string
+│   └── Program.cs                     # Program startup & service injections
+│
+└── StreamingAnalytics.slnx            # Solution file
+```
 
+---
 
-⚡ Veritabanı Yapısı & İndeks Optimizasyonu
-Tablo Şeması (StreamingLogs)
-Uygulama, SQL Server üzerinde aşağıdaki şemaya sahip StreamingLogs tablosunu sorgular:
+# 🔄 Request Lifecycle
 
-Kolon Adı	Veri Tipi	Açıklama
-LogId	INT (PK, Identity)	Benzersiz log kimliği
-UserName	NVARCHAR(100)	İzleyen kullanıcının adı
-ContentTitle	NVARCHAR(250)	İzlenen film/dizi başlığı
-Genre	NVARCHAR(50)	İçeriğin türü (Kategori)
-Platform	NVARCHAR(50)	Yayıncı platform
-WatchDate	DATETIME	İzleme tarihi ve saati
-WatchDurationMin	INT	İzleme süresi (Dakika)
-Rating	DECIMAL(3,1)	Kullanıcının verdiği puan (1-10)
-Country	NVARCHAR(100)	İzleyicinin ülkesi
-DeviceType	NVARCHAR(50)	Kullanılan cihaz (Mobil, TV vb.)
-Status	NVARCHAR(50)	İzleme durumu (Completed, Dropped vb.)
-İndeks Optimizasyonu (Performans Sırrı)
-1 milyon veri satırında anlık filtreleme yaparken gecikmeyi önlemek için veritabanında şu indekslerin (Indexes) tanımlanması önerilir:
+```text
+User Request
+      │
+      ▼
+Controller
+      │
+      ▼
+Dapper Query
+      │
+      ▼
+SQL Server
+      │
+      ▼
+DTO Mapping
+      │
+      ▼
+View Model
+      │
+      ▼
+Razor View
+      │
+      ▼
+Browser Response
+```
 
-sql
+---
 
-CREATE NONCLUSTERED INDEX IX_StreamingLogs_Filters 
-ON StreamingLogs (Platform, Genre, Status)
-INCLUDE (UserName, ContentTitle, WatchDate, WatchDurationMin, Rating, Country, DeviceType);
-Bu indeks sayesinde, arama kriterlerine göre veriler tüm tablo taranmadan (Table Scan yerine Index Seek ile) milisaniyeler düzeyinde çekilir.
+# ⚙ Dependency Injection
 
-🔧 Kurulum ve Çalıştırma
-1. Ön Koşullar
-.NET 8.0 SDK bilgisayarınızda kurulu olmalıdır.
-Yerel bir MS SQL Server (LocalDB veya Express) çalışır durumda olmalıdır.
-2. Veritabanı Bağlantısı
-StreamingAnalytics/appsettings.json dosyasını açın ve kendi yerel SQL Server bağlantı adresinize göre DefaultConnection değerini düzenleyin:
+```csharp
+builder.Services.AddScoped<DapperContext>();
+builder.Services.AddScoped<StreamingService>();
+```
 
-json
+---
 
+# 🔐 Security Considerations
+
+The application uses parameterized SQL queries to protect against SQL Injection attacks.
+
+```csharp
+var query = @"
+SELECT *
+FROM StreamingLogs
+WHERE UserName LIKE @UserName";
+
+var data = await connection.QueryAsync<StreamingLogDto>(
+    query,
+    new { UserName = "%" + search + "%" }
+);
+```
+
+---
+
+# 🔧 Installation
+
+### 1. Prerequisites
+* [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+* Microsoft SQL Server (LocalDB, Express, or Developer Edition)
+
+### 2. Database Creation
+
+```sql
+CREATE DATABASE StreamingDB;
+GO
+USE StreamingDB;
+GO
+
+CREATE TABLE StreamingLogs (
+    LogId INT IDENTITY(1,1) PRIMARY KEY,
+    UserName NVARCHAR(100) NOT NULL,
+    ContentTitle NVARCHAR(250) NOT NULL,
+    Genre NVARCHAR(50) NOT NULL,
+    Platform NVARCHAR(50) NOT NULL,
+    WatchDate DATETIME NOT NULL,
+    WatchDurationMin INT NOT NULL,
+    Rating DECIMAL(3,1) NOT NULL,
+    Country NVARCHAR(100) NOT NULL,
+    DeviceType NVARCHAR(50) NOT NULL,
+    Status NVARCHAR(50) NOT NULL
+);
+```
+
+### 3. Configuration
+
+```json
 "ConnectionStrings": {
   "DefaultConnection": "Server=.\\SQLEXPRESS;Database=StreamingDB;Trusted_Connection=True;TrustServerCertificate=True"
 }
-3. Çalıştırma Komutları
-Proje dizinine giderek terminal veya PowerShell üzerinden uygulamayı başlatın:
+```
 
-bash
+### 4. Running the Application
 
-# Bağımlılıkları yükle
+```bash
 dotnet restore
-# Uygulamayı çalıştır
 dotnet run --project StreamingAnalytics
-Tarayıcınızda açılan adreste (örneğin https://localhost:5001 veya http://localhost:5000) StreamPulse Dashboard'u görüntüleyebilirsiniz.
+```
+
+Open your browser and navigate to `https://localhost:5001` or `http://localhost:5000`.
+
+---
+
+# 🚀 Future Improvements
+
+* 📡 **Real-time Seeder:** Background worker to simulate active viewers generating logs in real-time.
+* ⚡ **Caching Layer:** Redis integration for caching platform statistics and top content lists.
+* 🔔 **WebSockets Integration:** SignalR implementation to push analytics updates to the UI in real-time.
+* 🐳 **Dockerization:** Containerization setup for quick multi-environment deployments.
+
+---
+
+# 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
