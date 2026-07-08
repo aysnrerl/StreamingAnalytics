@@ -268,3 +268,53 @@ StreamPulse/
 │   ├── wwwroot/                      # CSS, JS ve kütüphane dosyaları
 │   ├── appsettings.json              # Connection String tanımlamaları
 │   └── Program.cs                    # DI (Dependency Injection) kayıtları ve uygulama başlangıcı
+
+
+⚡ Veritabanı Yapısı & İndeks Optimizasyonu
+Tablo Şeması (StreamingLogs)
+Uygulama, SQL Server üzerinde aşağıdaki şemaya sahip StreamingLogs tablosunu sorgular:
+
+Kolon Adı	Veri Tipi	Açıklama
+LogId	INT (PK, Identity)	Benzersiz log kimliği
+UserName	NVARCHAR(100)	İzleyen kullanıcının adı
+ContentTitle	NVARCHAR(250)	İzlenen film/dizi başlığı
+Genre	NVARCHAR(50)	İçeriğin türü (Kategori)
+Platform	NVARCHAR(50)	Yayıncı platform
+WatchDate	DATETIME	İzleme tarihi ve saati
+WatchDurationMin	INT	İzleme süresi (Dakika)
+Rating	DECIMAL(3,1)	Kullanıcının verdiği puan (1-10)
+Country	NVARCHAR(100)	İzleyicinin ülkesi
+DeviceType	NVARCHAR(50)	Kullanılan cihaz (Mobil, TV vb.)
+Status	NVARCHAR(50)	İzleme durumu (Completed, Dropped vb.)
+İndeks Optimizasyonu (Performans Sırrı)
+1 milyon veri satırında anlık filtreleme yaparken gecikmeyi önlemek için veritabanında şu indekslerin (Indexes) tanımlanması önerilir:
+
+sql
+
+CREATE NONCLUSTERED INDEX IX_StreamingLogs_Filters 
+ON StreamingLogs (Platform, Genre, Status)
+INCLUDE (UserName, ContentTitle, WatchDate, WatchDurationMin, Rating, Country, DeviceType);
+Bu indeks sayesinde, arama kriterlerine göre veriler tüm tablo taranmadan (Table Scan yerine Index Seek ile) milisaniyeler düzeyinde çekilir.
+
+🔧 Kurulum ve Çalıştırma
+1. Ön Koşullar
+.NET 8.0 SDK bilgisayarınızda kurulu olmalıdır.
+Yerel bir MS SQL Server (LocalDB veya Express) çalışır durumda olmalıdır.
+2. Veritabanı Bağlantısı
+StreamingAnalytics/appsettings.json dosyasını açın ve kendi yerel SQL Server bağlantı adresinize göre DefaultConnection değerini düzenleyin:
+
+json
+
+"ConnectionStrings": {
+  "DefaultConnection": "Server=.\\SQLEXPRESS;Database=StreamingDB;Trusted_Connection=True;TrustServerCertificate=True"
+}
+3. Çalıştırma Komutları
+Proje dizinine giderek terminal veya PowerShell üzerinden uygulamayı başlatın:
+
+bash
+
+# Bağımlılıkları yükle
+dotnet restore
+# Uygulamayı çalıştır
+dotnet run --project StreamingAnalytics
+Tarayıcınızda açılan adreste (örneğin https://localhost:5001 veya http://localhost:5000) StreamPulse Dashboard'u görüntüleyebilirsiniz.
