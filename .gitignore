@@ -1,0 +1,21 @@
+## Build outputs
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+
+## Visual Studio cache and settings
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Rider / Resharper
+.idea/
+*.sln.DotSettings.user
+
+## OS files
+Thumbs.db
+Desktop.ini
+.DS_Store

@@ -1,0 +1,669 @@
+@model StreamingAnalytics.Dtos.DashboardViewModel
+@{
+    string section = ViewBag.ActiveSection as string ?? "monthly";
+    
+    // Data Serialization for Chart.js
+    string[] monthlyLabels  = Model.MonthlyTrend.Select(x => x.Label).ToArray();
+    long[]   monthlyValues  = Model.MonthlyTrend.Select(x => x.Value).ToArray();
+    string[] platformLabels = Model.PlatformDist.Select(x => x.Label).ToArray();
+    long[]   platformValues = Model.PlatformDist.Select(x => x.Value).ToArray();
+    string[] genreLabels    = Model.GenreDist.Select(x => x.Label).ToArray();
+    long[]   genreValues    = Model.GenreDist.Select(x => x.Value).ToArray();
+    string[] deviceLabels   = Model.DeviceDist.Select(x => x.Label).ToArray();
+    long[]   deviceValues   = Model.DeviceDist.Select(x => x.Value).ToArray();
+    string[] countryLabels  = Model.CountryDist.Select(x => x.Label).ToArray();
+    long[]   countryValues  = Model.CountryDist.Select(x => x.Value).ToArray();
+    string[] hourlyLabels   = Model.HourlyDist.Select(x => x.Label).ToArray();
+    long[]   hourlyValues   = Model.HourlyDist.Select(x => x.Value).ToArray();
+
+    var titles = new Dictionary<string, string> {
+        ["monthly"]  = "📈 Aylık İzlenme Trendi",
+        ["platform"] = "🎯 Platform Dağılımı",
+        ["genre"]    = "🎭 Tür Dağılımı",
+        ["device"]   = "📱 Cihaz Dağılımı",
+        ["country"]  = "🌍 Coğrafi Ülke Analizi",
+        ["hourly"]   = "⚡ Saatlik İzlenme Trendi",
+        ["top10"]    = "🏆 En Çok İzlenen 10 İçerik",
+        ["recent"]   = "Son 10 İzleme Kaydı"
+    };
+    
+    var queryNums = new Dictionary<string, string> {
+        ["monthly"]="5", ["platform"]="6", ["genre"]="7", ["device"]="8",
+        ["country"]="9", ["hourly"]="10", ["top10"]="11", ["recent"]="12"
+    };
+    
+    ViewData["Title"] = titles.GetValueOrDefault(section, "İstatistikler");
+}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="chart-page">
+
+    <!-- ── Header ── -->
+    <div class="cp-header">
+        <div>
+            <span class="cp-badge">SORGU @queryNums.GetValueOrDefault(section)</span>
+            <h1 class="cp-title">@titles.GetValueOrDefault(section)</h1>
+            <p class="cp-sub">1.000.000+ kayıt üzerinden canlı hesaplanan analitik metrik</p>
+        </div>
+        <a href="/Dashboard" class="back-btn">← Genel Görünüme Dön</a>
+    </div>
+
+    <!-- ── Quick Switch Tabs ── -->
+    <div class="tabs-bar">
+        <a href="/Dashboard/Charts?section=monthly" class="tab-link @(section == "monthly" ? "active" : "")">Aylık Trend</a>
+        <a href="/Dashboard/Charts?section=platform" class="tab-link @(section == "platform" ? "active" : "")">Platform</a>
+        <a href="/Dashboard/Charts?section=genre" class="tab-link @(section == "genre" ? "active" : "")">Türler</a>
+        <a href="/Dashboard/Charts?section=device" class="tab-link @(section == "device" ? "active" : "")">Cihazlar</a>
+        <a href="/Dashboard/Charts?section=country" class="tab-link @(section == "country" ? "active" : "")">Ülkeler</a>
+        <a href="/Dashboard/Charts?section=hourly" class="tab-link @(section == "hourly" ? "active" : "")">Saatlik Trend</a>
+        <a href="/Dashboard/Charts?section=top10" class="tab-link @(section == "top10" ? "active" : "")">En Çok İzlenen</a>
+        <a href="/Dashboard/Charts?section=recent" class="tab-link @(section == "recent" ? "active" : "")">Son Loglar</a>
+    </div>
+
+    <!-- ── 📊 RENDER SECTIONS ── -->
+    
+    <!-- S5: Aylık Trend -->
+    @if (section == "monthly")
+    {
+        <div class="chart-card">
+            <div class="card-header-inner">
+                <h3>Aylık İzlenme Sayısı Zaman Serisi</h3>
+                <span class="dot-indicator pulse-indigo"></span>
+            </div>
+            <div class="canvas-wrap">
+                <canvas id="chartCanvas" height="100"></canvas>
+            </div>
+        </div>
+        <script>
+        const ctx = document.getElementById('chartCanvas').getContext('2d');
+        const grad = ctx.createLinearGradient(0, 0, 0, 300);
+        grad.addColorStop(0, '#6366f1');
+        grad.addColorStop(1, 'rgba(99, 102, 241, 0.15)');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(monthlyLabels)),
+                datasets: [{
+                    label: 'İzlenme Sayısı',
+                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(monthlyValues)),
+                    backgroundColor: grad,
+                    borderColor: '#8b5cf6',
+                    borderWidth: 1.5,
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: '#141933' }, ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans' } } },
+                    x: { grid: { color: 'transparent' }, ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans' } } }
+                }
+            }
+        });
+        </script>
+    }
+
+    <!-- S6: Platform Dağılımı -->
+    @if (section == "platform")
+    {
+        <div class="two-col">
+            <div class="chart-card small">
+                <div class="card-header-inner">
+                    <h3>Platform Dağılım Analizi</h3>
+                </div>
+                <div class="canvas-wrap pie-mode">
+                    <canvas id="chartCanvas"></canvas>
+                </div>
+            </div>
+            <div class="chart-card small tbl-side">
+                <table class="mini-table">
+                    <thead>
+                        <tr><th>Platform</th><th class="num">İzlenme</th><th class="pct">Pay</th></tr>
+                    </thead>
+                    <tbody>
+                        @{ long total6 = Model.PlatformDist.Sum(x => x.Value); }
+                        @for (int i = 0; i < Model.PlatformDist.Count; i++)
+                        {
+                            var item = Model.PlatformDist[i];
+                            var colors = new[] { "#6366f1", "#06b6d4", "#8b5cf6", "#f59e0b", "#f43f5e" };
+                            var c = colors[i % colors.Length];
+                            <tr>
+                                <td><span class="color-dot" style="background:@c"></span> @item.Label</td>
+                                <td class="num">@item.Value.ToString("N0")</td>
+                                <td class="pct" style="color:@c">%@((item.Value * 100.0 / total6).ToString("F1"))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <script>
+        new Chart(document.getElementById('chartCanvas'), {
+            type: 'doughnut',
+            data: {
+                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(platformLabels)),
+                datasets: [{
+                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(platformValues)),
+                    backgroundColor: ['#6366f1', '#06b6d4', '#8b5cf6', '#f59e0b', '#f43f5e'],
+                    borderWidth: 3,
+                    borderColor: '#0b0e22',
+                    hoverOffset: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '65%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', weight: 600 } } }
+                }
+            }
+        });
+        </script>
+    }
+
+    <!-- S7: Tür Dağılımı -->
+    @if (section == "genre")
+    {
+        <div class="chart-card">
+            <div class="card-header-inner">
+                <h3>İçerik Kategorilerine Göre İzlenme Hacmi</h3>
+            </div>
+            <div class="canvas-wrap">
+                <canvas id="chartCanvas" height="110"></canvas>
+            </div>
+        </div>
+        <script>
+        const ctx = document.getElementById('chartCanvas').getContext('2d');
+        const grad = ctx.createLinearGradient(0, 0, 500, 0);
+        grad.addColorStop(0, '#8b5cf6');
+        grad.addColorStop(1, '#06b6d4');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(genreLabels)),
+                datasets: [{
+                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(genreValues)),
+                    backgroundColor: grad,
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { color: '#141933' }, ticks: { color: '#64748b' } },
+                    y: { grid: { color: 'transparent' }, ticks: { color: '#e2e8f0', font: { family: 'Plus Jakarta Sans', weight: 600 } } }
+                }
+            }
+        });
+        </script>
+    }
+
+    <!-- S8: Cihaz Dağılımı -->
+    @if (section == "device")
+    {
+        <div class="two-col">
+            <div class="chart-card small">
+                <div class="card-header-inner">
+                    <h3>Kullanıcı Donanım Tercihleri</h3>
+                </div>
+                <div class="canvas-wrap pie-mode">
+                    <canvas id="chartCanvas"></canvas>
+                </div>
+            </div>
+            <div class="chart-card small tbl-side">
+                <table class="mini-table">
+                    <thead>
+                        <tr><th>Cihaz</th><th class="num">İzlenme</th><th class="pct">Pay</th></tr>
+                    </thead>
+                    <tbody>
+                        @{ long total8 = Model.DeviceDist.Sum(x => x.Value); }
+                        @for (int i = 0; i < Model.DeviceDist.Count; i++)
+                        {
+                            var item = Model.DeviceDist[i];
+                            var colors = new[] { "#f59e0b", "#6366f1", "#10b981", "#f43f5e" };
+                            var c = colors[i % colors.Length];
+                            <tr>
+                                <td><span class="color-dot" style="background:@c"></span> @item.Label</td>
+                                <td class="num">@item.Value.ToString("N0")</td>
+                                <td class="pct" style="color:@c">%@((item.Value * 100.0 / total8).ToString("F1"))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <script>
+        new Chart(document.getElementById('chartCanvas'), {
+            type: 'pie',
+            data: {
+                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(deviceLabels)),
+                datasets: [{
+                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(deviceValues)),
+                    backgroundColor: ['#f59e0b', '#6366f1', '#10b981', '#f43f5e'],
+                    borderWidth: 2,
+                    borderColor: '#0b0e22'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', weight: 600 } } }
+                }
+            }
+        });
+        </script>
+    }
+
+    <!-- S9: Coğrafi Ülke Dağılımı (New!) -->
+    @if (section == "country")
+    {
+        <div class="two-col">
+            <div class="chart-card small">
+                <div class="card-header-inner">
+                    <h3>Coğrafi Dağılım (Top 5 Ülke)</h3>
+                </div>
+                <div class="canvas-wrap pie-mode">
+                    <canvas id="chartCanvas"></canvas>
+                </div>
+            </div>
+            <div class="chart-card small tbl-side">
+                <table class="mini-table">
+                    <thead>
+                        <tr><th>Ülke</th><th class="num">Kayıt Sayısı</th><th class="pct">Oran</th></tr>
+                    </thead>
+                    <tbody>
+                        @{ long total9 = Model.CountryDist.Sum(x => x.Value); }
+                        @for (int i = 0; i < Model.CountryDist.Count; i++)
+                        {
+                            var item = Model.CountryDist[i];
+                            var colors = new[] { "#10b981", "#8b5cf6", "#06b6d4", "#f43f5e", "#f59e0b" };
+                            var c = colors[i % colors.Length];
+                            <tr>
+                                <td><span class="color-dot" style="background:@c"></span> 📍 @item.Label</td>
+                                <td class="num">@item.Value.ToString("N0")</td>
+                                <td class="pct" style="color:@c">%@((item.Value * 100.0 / total9).ToString("F1"))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <script>
+        new Chart(document.getElementById('chartCanvas'), {
+            type: 'polarArea',
+            data: {
+                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(countryLabels)),
+                datasets: [{
+                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(countryValues)),
+                    backgroundColor: ['rgba(16, 185, 129, 0.7)', 'rgba(139, 92, 246, 0.7)', 'rgba(6, 182, 212, 0.7)', 'rgba(244, 63, 94, 0.7)', 'rgba(245, 158, 11, 0.7)'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    r: {
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        angleLines: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', weight: 600 } } }
+                }
+            }
+        });
+        </script>
+    }
+
+    <!-- S10: Saatlik İzlenme Dağılımı (New!) -->
+    @if (section == "hourly")
+    {
+        <div class="chart-card">
+            <div class="card-header-inner">
+                <h3>Günün Saatlerine Göre İzleyici Yoğunluğu</h3>
+                <span class="dot-indicator pulse-rose"></span>
+            </div>
+            <div class="canvas-wrap">
+                <canvas id="chartCanvas" height="95"></canvas>
+            </div>
+        </div>
+        <script>
+        const ctx = document.getElementById('chartCanvas').getContext('2d');
+        const grad = ctx.createLinearGradient(0, 0, 0, 300);
+        grad.addColorStop(0, 'rgba(244, 63, 94, 0.3)');
+        grad.addColorStop(1, 'rgba(244, 63, 94, 0)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(hourlyLabels)),
+                datasets: [{
+                    label: 'İzlenme Sayısı',
+                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(hourlyValues)),
+                    fill: true,
+                    backgroundColor: grad,
+                    borderColor: '#f43f5e',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#f43f5e',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: '#141933' }, ticks: { color: '#64748b' } },
+                    x: { grid: { color: 'rgba(255,255,255,0.02)' }, ticks: { color: '#64748b', maxRotation: 0 } }
+                }
+            }
+        });
+        </script>
+    }
+
+    <!-- S11: En Çok İzlenen 10 İçerik -->
+    @if (section == "top10")
+    {
+        <div class="chart-card">
+            <div class="card-header-inner">
+                <h3>En Popüler 10 İçerik Sıralaması</h3>
+            </div>
+            <table class="full-table">
+                <thead>
+                    <tr><th class="rank-col">Sıra</th><th>İçerik Adı</th><th class="num">İzlenme Sayısı</th><th class="bar-col">Hacim Oranı</th></tr>
+                </thead>
+                <tbody>
+                    @{ long maxVal = Model.Top10Content.FirstOrDefault()?.Value ?? 1; }
+                    @for (int i = 0; i < Model.Top10Content.Count; i++)
+                    {
+                        var item = Model.Top10Content[i];
+                        var pct  = (int)(item.Value * 100.0 / maxVal);
+                        <tr>
+                            <td>
+                                @if(i == 0) { <span class="rank-badge gold">🥇 1</span> }
+                                else if(i == 1) { <span class="rank-badge silver">🥈 2</span> }
+                                else if(i == 2) { <span class="rank-badge bronze">🥉 3</span> }
+                                else { <span class="rank-badge normal">@(i+1)</span> }
+                            </td>
+                            <td class="content-name">🎬 @item.Label</td>
+                            <td class="num-big">@item.Value.ToString("N0")</td>
+                            <td class="bar-cell">
+                                <div class="bar-bg"><div class="bar-fill" style="width:@pct%"></div></div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <!-- S12: Son 10 İzleme -->
+    @if (section == "recent")
+    {
+        <div class="chart-card">
+            <div class="card-header-inner">
+                <h3>Tetiklenen Son 10 İzleme Kaydı</h3>
+            </div>
+            <div class="table-scroll-wrap">
+                <table class="full-table">
+                    <thead>
+                        <tr><th>ID</th><th>Kullanıcı</th><th>İçerik</th><th>Platform</th><th>Tarih</th><th>Süre</th><th>Puan</th><th>Ülke</th><th>Cihaz</th><th>Durum</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var log in Model.RecentLogs)
+                        {
+                            <tr>
+                                <td class="id-col">#@log.LogId</td>
+                                <td class="user-col">@log.UserName</td>
+                                <td class="content-col">@log.ContentTitle</td>
+                                <td><span class="plt">@log.Platform</span></td>
+                                <td class="date-col">@log.WatchDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@log.WatchDurationMin dk</td>
+                                <td class="star">⭐ @log.Rating.ToString("F1")</td>
+                                <td>📍 @log.Country</td>
+                                <td>@log.DeviceType</td>
+                                <td>
+                                    @if (log.Status == "Completed") { <span class="sb done">Tamamlandı</span> }
+                                    else if (log.Status == "In Progress") { <span class="sb prog">Devam Ediyor</span> }
+                                    else { <span class="sb drop">Bıraktı</span> }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>
+
+<style>
+    .chart-page { max-width: 1200px; margin: 0 auto; }
+
+    /* ── Header ── */
+    .cp-header { 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        margin-bottom: 28px; 
+    }
+    .cp-badge {
+        font-size: .68rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+        color: #fff;
+        padding: 4px 12px;
+        border-radius: 99px;
+        box-shadow: 0 4px 10px rgba(99,102,241,0.25);
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+    .cp-title { 
+        font-size: 1.8rem; 
+        font-weight: 800; 
+        color: #fff; 
+        letter-spacing: -0.8px;
+    }
+    .cp-sub { 
+        font-size: .85rem; 
+        color: var(--color-text-muted); 
+        margin-top: 6px; 
+    }
+    .back-btn { 
+        background: rgba(255, 255, 255, 0.03); 
+        border: 1px solid rgba(255, 255, 255, 0.06); 
+        color: #94a3b8; 
+        border-radius: 10px; 
+        padding: 10px 20px; 
+        text-decoration: none; 
+        font-size: .88rem; 
+        font-weight: 700;
+        transition: all .2s; 
+    }
+    .back-btn:hover { 
+        border-color: var(--accent-primary); 
+        color: #fff; 
+        background: rgba(99, 102, 241, 0.05);
+        transform: translateY(-1px);
+    }
+
+    /* ── Navigation Tabs ── */
+    .tabs-bar {
+        display: flex;
+        gap: 8px;
+        background: rgba(11, 14, 34, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        padding: 6px;
+        border-radius: 14px;
+        margin-bottom: 28px;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    .tab-link {
+        color: #94a3b8;
+        text-decoration: none;
+        font-size: .82rem;
+        font-weight: 700;
+        padding: 8px 16px;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+    }
+    .tab-link:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
+    }
+    .tab-link.active {
+        color: #fff;
+        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+        box-shadow: 0 4px 10px rgba(99,102,241,0.2);
+    }
+
+    /* ── Chart Layout Cards ── */
+    .chart-card { 
+        background: rgba(11, 14, 34, 0.6); 
+        border: 1px solid rgba(255, 255, 255, 0.03); 
+        border-radius: 18px; 
+        padding: 30px; 
+        margin-bottom: 24px; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        backdrop-filter: blur(10px);
+    }
+    .card-header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+    }
+    .card-header-inner h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #e2e8f0;
+    }
+    .dot-indicator {
+        width: 10px; height: 10px;
+        border-radius: 99px;
+    }
+    .pulse-indigo {
+        background: var(--accent-primary);
+        box-shadow: 0 0 8px var(--accent-primary);
+    }
+    .pulse-rose {
+        background: var(--accent-rose);
+        box-shadow: 0 0 8px var(--accent-rose);
+    }
+    .canvas-wrap {
+        position: relative;
+    }
+    .canvas-wrap.pie-mode {
+        max-width: 320px;
+        margin: 0 auto;
+    }
+
+    .two-col { display: flex; gap: 24px; }
+    .chart-card.small { flex: 1; }
+    .tbl-side { display: flex; align-items: center; justify-content: center; }
+
+    /* ── Mini Tables ── */
+    .mini-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+    .mini-table th { 
+        color: var(--color-text-muted); 
+        font-size: .7rem; 
+        font-weight: 700;
+        text-transform: uppercase; 
+        padding: 12px; 
+        border-bottom: 1px solid rgba(255,255,255,0.05); 
+        text-align: left; 
+        letter-spacing: 0.5px;
+    }
+    .mini-table td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.02); color: #cbd5e1; }
+    .mini-table tbody tr:last-child td { border-bottom: none; }
+    .mini-table tbody tr:hover td { color: #fff; }
+    .color-dot { display: inline-block; width: 8px; height: 8px; border-radius: 99px; margin-right: 8px; }
+    .num { font-weight: 700; text-align: right; color: #fff; }
+    .pct { font-weight: 800; text-align: right; }
+
+    /* ── Full Tables ── */
+    .full-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+    .full-table th { 
+        color: var(--color-text-muted); 
+        font-size: .7rem; 
+        font-weight: 700;
+        text-transform: uppercase; 
+        padding: 14px 18px; 
+        border-bottom: 1px solid rgba(255,255,255,0.05); 
+        text-align: left; 
+        letter-spacing: 0.5px;
+    }
+    .full-table td { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.02); color: #cbd5e1; }
+    .full-table tbody tr:hover { background: rgba(255,255,255, 0.015); }
+    .full-table tbody tr:last-child td { border-bottom: none; }
+
+    .rank-col { width: 90px; }
+    .rank-badge { 
+        font-size: .75rem; 
+        font-weight: 800; 
+        border-radius: 8px; 
+        padding: 4px 10px; 
+        display: inline-block;
+    }
+    .rank-badge.gold { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+    .rank-badge.silver { background: rgba(148, 163, 184, 0.15); color: #e2e8f0; border: 1px solid rgba(148,163,184,0.3); }
+    .rank-badge.bronze { background: rgba(180, 83, 9, 0.15); color: #f59e0b; border: 1px solid rgba(180,83,9,0.3); }
+    .rank-badge.normal { background: rgba(255, 255, 255, 0.04); color: #94a3b8; }
+
+    .content-name { font-weight: 700; color: #f1f5f9; }
+    .num-big { color: var(--accent-primary); font-weight: 800; font-size: 1.05rem; text-align: right; }
+    .bar-col { width: 220px; }
+    .bar-cell { vertical-align: middle; }
+    .bar-bg { background: rgba(255,255,255,0.03); border-radius: 99px; height: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.03); }
+    .bar-fill { background: linear-gradient(90deg, var(--accent-primary) 0%, var(--accent-secondary) 100%); height: 100%; border-radius: 99px; }
+
+    /* ── Logs Table specifics ── */
+    .table-scroll-wrap { overflow-x: auto; }
+    .id-col { color: var(--color-text-dark); font-size: .8rem; font-weight: 600; }
+    .user-col { color: var(--accent-secondary); font-weight: 700; }
+    .content-col { font-weight: 600; color: #f1f5f9; }
+    .date-col { color: var(--color-text-muted); font-size: .82rem; }
+    .star { color: var(--accent-amber); font-weight: 700; }
+    .plt { 
+        background: rgba(6, 182, 212, 0.1); 
+        border: 1px solid rgba(6,182,212,0.2); 
+        color: var(--accent-cyan); 
+        border-radius: 6px; 
+        padding: 3px 8px; 
+        font-size: .75rem; 
+        font-weight: 700;
+        white-space: nowrap;
+    }
+    .sb { 
+        border-radius: 6px; 
+        padding: 3px 8px; 
+        font-size: .75rem; 
+        font-weight: 700;
+        white-space: nowrap;
+        display: inline-block;
+    }
+    .sb.done { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16,185,129,0.2); color: var(--accent-emerald); }
+    .sb.prog { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245,158,11,0.2); color: var(--accent-amber); }
+    .sb.drop { background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244,63,94,0.2); color: var(--accent-rose); }
+
+    /* Responsive adjustments */
+    @@media (max-width: 900px) {
+        .two-col { flex-direction: column; }
+        .tabs-bar { padding: 4px; }
+        .tab-link { padding: 6px 12px; font-size: 0.78rem; }
+    }
+</style>

@@ -1,0 +1,245 @@
+@model List<StreamingAnalytics.Dtos.StreamingLogDto>
+@{
+    ViewData["Title"] = "İzleme Kayıtları";
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages  = ViewBag.TotalPages;
+    int totalCount  = ViewBag.TotalCount;
+    string selGenre    = ViewBag.Genre    as string ?? "";
+    string selPlatform = ViewBag.Platform as string ?? "";
+    string selStatus   = ViewBag.Status   as string ?? "";
+    string selUser     = ViewBag.UserName as string ?? "";
+    string selTitle    = ViewBag.ContentTitle as string ?? "";
+}
+
+<div class="list-wrap">
+
+    <!-- ── Header ── -->
+    <div class="list-top">
+        <div>
+            <h1 class="list-title">🗂️ İzleme Veritabanı</h1>
+            <span class="total-badge">Toplam <strong>@totalCount.ToString("N0")</strong> kayıt bulundu · Sayfa @currentPage / @totalPages</span>
+        </div>
+        <a href="/Dashboard" class="btn-back">📊 Dashboard'a Dön</a>
+    </div>
+
+    <!-- ── Filter Card (Queries 11 & 12 Filter Inputs) ── -->
+    <form method="get" class="filter-card">
+        <div class="filter-row">
+
+            <div class="filter-grp">
+                <label>Kullanıcı Adı</label>
+                <input type="text" name="userName" value="@selUser" placeholder="user_..." class="f-input" />
+            </div>
+
+            <div class="filter-grp">
+                <label>İçerik Adı</label>
+                <input type="text" name="contentTitle" value="@selTitle" placeholder="İçerik başlığı..." class="f-input" />
+            </div>
+
+            <div class="filter-grp">
+                <label>Kategori (Tür)</label>
+                <select name="genre" class="f-input select-input">
+                    <option value="">Tümü</option>
+                    @foreach (var g in new[] { "Action","Drama","Sci-Fi","Thriller","Comedy","Horror","Romance","Documentary","Animation","Crime" })
+                    {
+                        if (g == selGenre) { <option value="@g" selected>@g</option> }
+                        else { <option value="@g">@g</option> }
+                    }
+                </select>
+            </div>
+
+            <div class="filter-grp">
+                <label>Platform</label>
+                <select name="platform" class="f-input select-input">
+                    <option value="">Tümü</option>
+                    @foreach (var pl in new[] { "Netflix","Amazon Prime","Disney+","HBO Max","Apple TV+" })
+                    {
+                        if (pl == selPlatform) { <option value="@pl" selected>@pl</option> }
+                        else { <option value="@pl">@pl</option> }
+                    }
+                </select>
+            </div>
+
+            <div class="filter-grp">
+                <label>İzleme Durumu</label>
+                <select name="status" class="f-input select-input">
+                    <option value="">Tümü</option>
+                    @foreach (var st in new[] { "Completed","In Progress","Dropped" })
+                    {
+                        if (st == selStatus) { <option value="@st" selected>@st</option> }
+                        else { <option value="@st">@st</option> }
+                    }
+                </select>
+            </div>
+
+            <div class="filter-grp btn-grp">
+                <button type="submit" class="btn-search">🔍 Filtrele</button>
+                <a href="/Streaming" class="btn-clear">✖ Sıfırla</a>
+            </div>
+
+        </div>
+    </form>
+
+    <!-- ── Modern Paged Table (12 Records Per Page) ── -->
+    <div class="tbl-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th># ID</th>
+                    <th>Kullanıcı</th>
+                    <th>İçerik Başlığı</th>
+                    <th>Tür</th>
+                    <th>Platform</th>
+                    <th>İzleme Tarihi</th>
+                    <th>Süre</th>
+                    <th>Puan</th>
+                    <th>Ülke</th>
+                    <th>Cihaz</th>
+                    <th>Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="id-col">#@item.LogId</td>
+                            <td class="user-col">@item.UserName</td>
+                            <td class="title-col">🎬 @item.ContentTitle</td>
+                            <td><span class="genre-tag">@item.Genre</span></td>
+                            <td><span class="plat-tag">@item.Platform</span></td>
+                            <td class="date-col">@item.WatchDate.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td class="duration-col">@item.WatchDurationMin dk</td>
+                            <td class="rating-col">⭐ @item.Rating.ToString("F1")</td>
+                            <td class="country-col">📍 @item.Country</td>
+                            <td>@item.DeviceType</td>
+                            <td>
+                                @if (item.Status == "Completed")
+                                {
+                                    <span class="s-badge done">Tamamlandı</span>
+                                }
+                                else if (item.Status == "In Progress")
+                                {
+                                    <span class="s-badge prog">Devam Ediyor</span>
+                                }
+                                else
+                                {
+                                    <span class="s-badge drop">Bıraktı</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="11" class="no-data">Kriterlere uygun kayıt bulunamadı.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ── Custom Glassmorphic Pagination ── -->
+    @if (totalPages > 1)
+    {
+        <div class="paging-row">
+            <span class="page-info">Sayfa <strong>@currentPage</strong> / @totalPages</span>
+            <div class="page-btns">
+                @if (currentPage > 1)
+                {
+                    <a class="pg-btn" href="@Url.Action("Index", new { page = currentPage - 1, userName = selUser, contentTitle = selTitle, genre = selGenre, platform = selPlatform, status = selStatus })">◀</a>
+                }
+                @{
+                    int pStart = Math.Max(1, currentPage - 2);
+                    int pEnd   = Math.Min(totalPages, currentPage + 2);
+                }
+                @if (pStart > 1)
+                {
+                    <a class="pg-btn" href="@Url.Action("Index", new { page = 1, userName = selUser, contentTitle = selTitle, genre = selGenre, platform = selPlatform, status = selStatus })">1</a>
+                    if (pStart > 2) { <span class="pg-dots">…</span> }
+                }
+                @for (int i = pStart; i <= pEnd; i++)
+                {
+                    <a class="pg-btn @(i == currentPage ? "active" : "")"
+                       href="@Url.Action("Index", new { page = i, userName = selUser, contentTitle = selTitle, genre = selGenre, platform = selPlatform, status = selStatus })">@i</a>
+                }
+                @if (pEnd < totalPages)
+                {
+                    if (pEnd < totalPages - 1) { <span class="pg-dots">…</span> }
+                    <a class="pg-btn" href="@Url.Action("Index", new { page = totalPages, userName = selUser, contentTitle = selTitle, genre = selGenre, platform = selPlatform, status = selStatus })">@totalPages</a>
+                }
+                @if (currentPage < totalPages)
+                {
+                    <a class="pg-btn" href="@Url.Action("Index", new { page = currentPage + 1, userName = selUser, contentTitle = selTitle, genre = selGenre, platform = selPlatform, status = selStatus })">▶</a>
+                }
+            </div>
+        </div>
+    }
+
+</div>
+
+<style>
+    .list-wrap { max-width: 1300px; margin: 0 auto; }
+
+    /* ── Header ── */
+    .list-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+    .list-title { font-size: 1.8rem; font-weight: 800; margin: 0; background: var(--gradient-neon); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.8px; }
+    .total-badge { color: var(--color-text-muted); font-size: .85rem; }
+    .total-badge strong { color: var(--color-text-main); }
+    .btn-back { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); color: #94a3b8; border-radius: 10px; padding: 10px 20px; text-decoration: none; font-weight: 700; font-size: .88rem; transition: all .2s; }
+    .btn-back:hover { border-color: var(--accent-primary); color: #fff; background: rgba(99, 102, 241, 0.05); transform: translateY(-1px); }
+
+    /* ── Elegant Glass Filter Form ── */
+    .filter-card { background: rgba(11, 14, 34, 0.5); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 18px; padding: 24px; margin-bottom: 24px; backdrop-filter: blur(10px); }
+    .filter-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+    .filter-grp { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 170px; }
+    .filter-grp label { font-size: .72rem; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+    .f-input { background: rgba(6, 8, 19, 0.6); border: 1.5px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 10px 14px; font-size: .88rem; color: var(--color-text-main); outline: none; transition: all .2s; font-weight: 500; }
+    .f-input::placeholder { color: #475569; }
+    .f-input:focus { border-color: var(--accent-primary); box-shadow: 0 0 10px rgba(99, 102, 241, 0.2); background: rgba(6, 8, 19, 0.9); }
+    .select-input { cursor: pointer; }
+    .select-input option { background: #0b0e22; color: #f1f5f9; }
+
+    .btn-grp { flex-direction: row !important; gap: 10px !important; align-items: flex-end; flex-grow: 1.5; }
+    .btn-search { background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%); color: white; border: none; border-radius: 10px; padding: 11px 24px; font-size: .88rem; cursor: pointer; font-weight: 700; white-space: nowrap; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2); }
+    .btn-search:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(99, 102, 241, 0.35); }
+    .btn-clear { background: rgba(255, 255, 255, 0.03); color: var(--color-text-muted); border-radius: 10px; padding: 11px 18px; text-decoration: none; font-size: .88rem; border: 1.5px solid rgba(255, 255, 255, 0.05); white-space: nowrap; font-weight: 700; text-align: center; transition: all 0.2s; }
+    .btn-clear:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15); color: #fff; }
+
+    /* ── Exquisite Glass Table ── */
+    .tbl-wrap { background: rgba(11, 14, 34, 0.5); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 18px; overflow-x: auto; margin-bottom: 24px; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); }
+    .data-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+    .data-table thead { background: rgba(9, 11, 26, 0.4); }
+    .data-table th { padding: 16px 18px; text-align: left; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); border-bottom: 1px solid rgba(255, 255, 255, 0.04); white-space: nowrap; }
+    .data-table td { padding: 14px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.02); color: #cbd5e1; }
+    .data-table tbody tr:hover { background: rgba(255, 255, 255, 0.015); }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+
+    .id-col { color: var(--color-text-dark); font-size: .8rem; font-weight: 600; }
+    .user-col { font-weight: 700; color: var(--accent-secondary); }
+    .title-col { font-weight: 600; color: #fff; }
+    .date-col { color: var(--color-text-muted); font-size: .82rem; }
+    .duration-col { color: #f1f5f9; font-weight: 500; }
+    .rating-col { font-weight: 700; color: var(--accent-amber); }
+    .country-col { font-weight: 500; }
+    .genre-tag { background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); color: var(--accent-primary); border-radius: 6px; padding: 3px 8px; font-size: .75rem; font-weight: 700; white-space: nowrap; }
+    .plat-tag  { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: var(--accent-emerald); border-radius: 6px; padding: 3px 8px; font-size: .75rem; font-weight: 700; white-space: nowrap; }
+    
+    .s-badge { border-radius: 6px; padding: 3px 8px; font-size: .75rem; font-weight: 700; white-space: nowrap; display: inline-block; }
+    .s-badge.done { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16,185,129,0.2); color: var(--accent-emerald); }
+    .s-badge.prog { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245,158,11,0.2); color: var(--accent-amber); }
+    .s-badge.drop { background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244,63,94,0.2); color: var(--accent-rose); }
+    .no-data { text-align: center; padding: 80px; color: var(--color-text-muted); font-size: 0.95rem; }
+
+    /* ── Neon Pagination ── */
+    .paging-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .page-info { font-size: .85rem; color: var(--color-text-muted); }
+    .page-info strong { color: var(--color-text-main); }
+    .page-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pg-btn { background: rgba(11, 14, 34, 0.5); border: 1.5px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 8px 15px; font-size: .82rem; color: #cbd5e1; text-decoration: none; font-weight: 700; transition: all 0.2s; }
+    .pg-btn:hover { border-color: rgba(255,255,255,0.15); color: #fff; background: rgba(255, 255, 255, 0.03); }
+    .pg-btn.active { background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%); border-color: transparent; color: white; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2); }
+    .pg-dots { padding: 8px 4px; color: var(--color-text-dark); font-weight: 700; }
+</style>
