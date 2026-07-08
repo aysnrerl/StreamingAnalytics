@@ -176,12 +176,13 @@ Instead of using Entity Framework Core, this project intentionally uses **Dapper
 ---
 
 # 📊 Dashboard Modules
-
+<img width="1920" height="881" alt="Image" src="https://github.com/user-attachments/assets/220bc2e6-a027-420a-99b0-fc7437ac3d9d" />
 The StreamPulse dashboard is organized into **12 analytics modules**, each designed to provide valuable insights into streaming platform activity. Every module is powered by an optimized SQL query and delivers near real-time results.
 
 ---
 
 ### 📌 1. Total Streaming Records
+<img width="344" height="215" alt="Image" src="https://github.com/user-attachments/assets/a7560bce-befd-40f2-840e-2d24ff52eecc" />
 * **Purpose:** Displays the total number of streaming activities stored in the database.
 * **Key Insights:** Overall streaming volume, database growth, and total platforms activity.
 
@@ -193,6 +194,7 @@ SELECT COUNT(*) FROM StreamingLogs;
 ---
 
 ### 📌 2. Unique Users
+<img width="343" height="192" alt="Image" src="https://github.com/user-attachments/assets/bf95fa99-0d8e-4a2e-a28a-b9552aaa515c" />
 * **Purpose:** Shows the number of distinct users who have watched at least one piece of content.
 * **Key Insights:** Active audience size, user engagement levels, and platforms reach.
 
@@ -204,6 +206,7 @@ SELECT COUNT(DISTINCT UserName) FROM StreamingLogs;
 ---
 
 ### 📌 3. Total Watch Time
+<img width="349" height="208" alt="Image" src="https://github.com/user-attachments/assets/7bd5746b-0514-405e-a22a-4056deaa76d5" />
 * **Purpose:** Calculates the cumulative watch duration across the entire platform.
 * **Key Insights:** Cumulative watch hours, total platform usage, and user stickiness.
 
@@ -215,6 +218,7 @@ SELECT SUM(WatchDurationMin) / 60 FROM StreamingLogs;
 ---
 
 ### 📌 4. Average Rating
+<img width="348" height="221" alt="Image" src="https://github.com/user-attachments/assets/38a1dc37-322d-4599-b74a-00467d62891c" />
 * **Purpose:** Calculates the average rating given by viewers across all content.
 * **Key Insights:** Viewer satisfaction levels, content quality indicators, and platform scoring trends.
 
@@ -226,6 +230,7 @@ SELECT ROUND(AVG(CAST(Rating AS FLOAT)), 1) FROM StreamingLogs;
 ---
 
 ### 📌 5. Monthly Streaming Trend
+<img width="1911" height="880" alt="Image" src="https://github.com/user-attachments/assets/2c6346fa-2021-4213-94d4-e52d19ccca4f" />
 * **Purpose:** Visualizes streaming activity over the last 12 months.
 * **Key Insights:** Monthly growth metrics, seasonal spikes, and long-term user behavior trends.
 
@@ -243,6 +248,7 @@ ORDER BY Label;
 ---
 
 ### 📌 6. Streaming Platform Distribution
+<img width="1916" height="879" alt="Image" src="https://github.com/user-attachments/assets/858e8851-c0c5-49dd-a3ba-6ca633cfba7c" />
 * **Purpose:** Shows the popularity and market share of different streaming services.
 * **Key Insights:** Comparative volumes for Netflix, Disney+, Prime Video, HBO Max, and Apple TV+.
 
@@ -257,6 +263,7 @@ ORDER BY Value DESC;
 ---
 
 ### 📌 7. Genre Analytics
+<img width="1906" height="879" alt="Image" src="https://github.com/user-attachments/assets/30d3f268-98c0-48db-9f06-4336e2b8c959" />
 * **Purpose:** Displays the most popular content categories among users.
 * **Key Insights:** Preferred genres (Action, Drama, Comedy, Horror, Romance, Documentary, etc.).
 
@@ -271,6 +278,7 @@ ORDER BY Value DESC;
 ---
 
 ### 📌 8. Device Distribution
+<img width="1914" height="878" alt="Image" src="https://github.com/user-attachments/assets/849922ae-3326-4787-bdb5-1f0773d4caf0" />
 * **Purpose:** Analyzes which device types users prefer for streaming content.
 * **Key Insights:** Hardware trends (Mobile, Desktop, Smart TV, Tablet) to drive frontend optimizations.
 
@@ -285,6 +293,7 @@ ORDER BY Value DESC;
 ---
 
 ### 📌 9. Country Analytics
+<img width="1916" height="879" alt="Image" src="https://github.com/user-attachments/assets/ec728cc2-a066-4b2d-b217-a88d4fe88cca" />
 * **Purpose:** Identifies the countries generating the highest streaming sessions.
 * **Key Insights:** Geographic traffic distribution, regional trends, and market presence.
 
@@ -299,6 +308,7 @@ ORDER BY Value DESC;
 ---
 
 ### 📌 10. Peak Streaming Hours
+<img width="1907" height="874" alt="Image" src="https://github.com/user-attachments/assets/4092828d-2b15-4001-9cd6-f1fc03c40ccc" />
 * **Purpose:** Displays streaming traffic levels hourly throughout the day.
 * **Key Insights:** Peak traffic times, server planning metrics, and infrastructure scheduling.
 
@@ -315,6 +325,7 @@ ORDER BY DATEPART(HOUR, WatchDate);
 ---
 
 ### 📌 11. Top 10 Most Watched Content
+<img width="1914" height="873" alt="Image" src="https://github.com/user-attachments/assets/59b87757-f20c-42a7-b24d-71742cf5a4b9" />
 * **Purpose:** Ranks the individual movies and TV shows with the highest watch volume.
 * **Key Insights:** Hit content identification, recommendation engine inputs, and trends.
 
@@ -329,10 +340,13 @@ ORDER BY Value DESC;
 ---
 
 ### 📌 12. Advanced Search & Pagination
+<img width="1915" height="873" alt="Image" src="https://github.com/user-attachments/assets/38e4fb6b-cffa-4077-9a38-baa55b8e6610" />
 * **Purpose:** Provides a deep data exploration interface with dynamic multi-parameter filters.
 * **Key Insights:** Instantly filters logs by Username, Content Title, Genre, Platform, and Status on 1,000,000+ rows.
 
 **SQL Operation:**
+<img width="1911" height="876" alt="Image" src="https://github.com/user-attachments/assets/4300a3c4-88d4-4ca8-9f55-6143f2ad94a8" />
+
 ```sql
 SELECT LogId, UserName, ContentTitle, Genre, Platform,
        WatchDate, WatchDurationMin, Rating, Country, DeviceType, Status
